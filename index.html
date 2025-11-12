@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏸羽毛球排行榜🏸</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background: #2d8659;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px 24px;
+      background: #f5f5f5;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s;
+      color: #333;
+    }
+
+    .tab.active {
+      background: #2d8659;
+      color: white;
+      border-color: #2d8659;
+    }
+
+    .leaderboard {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .leaderboard-header {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      padding: 15px 20px;
+      background: #2d8659;
+      color: white;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .player-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      padding: 15px 20px;
+      background: #fafafa;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #e0e0e0;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .player-row:hover {
+      transform: translateX(5px);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      background: white;
+    }
+
+    .rank {
+      font-weight: bold;
+      font-size: 1.5em;
+      color: #2d8659;
+      display: flex;
+      align-items: center;
+    }
+
+    .rank.top1 {
+      color: #FFD700;
+    }
+
+    .rank.top2 {
+      color: #C0C0C0;
+    }
+
+    .rank.top3 {
+      color: #CD7F32;
+    }
+
+    .name {
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      font-size: 1.1em;
+      color: #333;
+    }
+
+    .gender-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      margin-left: 15px;
+      font-weight: bold;
+    }
+
+    .gender-badge.male {
+      background: #E3F2FD;
+      color: #1976D2;
+    }
+
+    .gender-badge.female {
+      background: #FCE4EC;
+      color: #C2185B;
+    }
+
+    .score {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #2d8659;
+    }
+
+    .moving-up {
+      animation: moveUp 0.5s ease-out;
+    }
+
+    .moving-down {
+      animation: moveDown 0.5s ease-out;
+    }
+
+    @keyframes moveUp {
+      0% {
+        transform: translateY(50px);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes moveDown {
+      0% {
+        transform: translateY(-50px);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+      font-size: 1.2em;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .leaderboard-header,
+      .player-row {
+        grid-template-columns: 60px 1fr;
+        padding: 12px 15px;
+        font-size: 0.9em;
+      }
+
+      .rank {
+        font-size: 1.2em;
+      }
+
+      .name {
+        font-size: 1em;
+      }
+
+      .score {
+        font-size: 1em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .name {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .gender-badge {
+        margin-left: 0;
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🏸 南信大金牛湖羽毛球排行榜 🏸</h1>
+
+    <div class="controls">
+      <div class="tabs">
+        <button class="tab active" data-filter="all">全部</button>
+        <button class="tab" data-filter="male">男子</button>
+        <button class="tab" data-filter="female">女子</button>
+      </div>
+    </div>
+
+    <div class="leaderboard">
+      <div class="leaderboard-header">
+        <div>排名</div>
+        <div>球员</div>
+      </div>
+      <div id="playerList"></div>
+    </div>
+  </div>
+
+  <script>
+    let players = [];
+    let currentFilter = 'all';
+
+    // 初始化示例数据
+    function initData() {
+      players = [
+        { id: 1, name: '林丹', gender: 'male', score: 2850 },
+        { id: 2, name: '谌龙', gender: 'male', score: 2720 },
+        { id: 3, name: '李雪芮', gender: 'female', score: 2680 },
+        { id: 4, name: '戴资颖', gender: 'female', score: 2640 },
+        { id: 5, name: '石宇奇', gender: 'male', score: 2590 },
+        { id: 6, name: '陈雨菲', gender: 'female', score: 2550 },
+        { id: 7, name: '桃田贤斗', gender: 'male', score: 2520 },
+        { id: 8, name: '安赛龙', gender: 'male', score: 2480 }
+      ];
+      renderPlayers();
+    }
+
+    // 渲染排行榜
+    function renderPlayers(animate = false) {
+      const oldRanks = new Map();
+      if (animate) {
+        const sorted = [...players].sort((a, b) => b.score - a.score);
+        sorted.forEach((player, index) => {
+          oldRanks.set(player.id, index);
+        });
+      }
+
+      let filteredPlayers = players;
+      if (currentFilter !== 'all') {
+        filteredPlayers = players.filter(p => p.gender === currentFilter);
+      }
+
+      filteredPlayers.sort((a, b) => b.score - a.score);
+
+      const listEl = document.getElementById('playerList');
+
+      if (filteredPlayers.length === 0) {
+        listEl.innerHTML = '<div class="empty-state">暂无数据</div>';
+        return;
+      }
+
+      listEl.innerHTML = filteredPlayers.map((player, index) => {
+        const rank = index + 1;
+        let rankClass = '';
+        if (rank === 1) rankClass = 'top1';
+        else if (rank === 2) rankClass = 'top2';
+        else if (rank === 3) rankClass = 'top3';
+
+        let animClass = '';
+        if (animate && oldRanks.has(player.id)) {
+          const oldRank = oldRanks.get(player.id);
+          if (oldRank > index) animClass = 'moving-up';
+          else if (oldRank < index) animClass = 'moving-down';
+        }
+
+        return `
+                    <div class="player-row ${animClass}">
+                        <div class="rank ${rankClass}">#${rank}</div>
+                        <div class="name">
+                            ${player.name}
+                            <span class="gender-badge ${player.gender}">
+                                ${player.gender === 'male' ? '♂ 男' : '♀ 女'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+      }).join('');
+    }
+
+    // 切换筛选
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilter = e.target.dataset.filter;
+        renderPlayers();
+      });
+    });
+
+    // 初始化
+    initData();
+  </script>
+</body>
+
+</html>
